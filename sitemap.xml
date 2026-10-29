@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+	<url>
+		<loc>https://tiny-landlord.com/</loc>
+		<lastmod>2026-10-29</lastmod>
+		<image:image><image:loc>https://tiny-landlord.com/img/social.png</image:loc></image:image>
+		<image:image><image:loc>https://tiny-landlord.com/img/classic-icon-512.png</image:loc></image:image>
+	</url>
+	<url>
+		<loc>https://tiny-landlord.com/privacy/</loc>
+		<lastmod>2026-10-29</lastmod>
+	</url>
+	<url>
+		<loc>https://tiny-landlord.com/tycoon/</loc>
+		<lastmod>2026-10-29</lastmod>
+		<image:image><image:loc>https://tiny-landlord.com/img/social-tycoon.png</image:loc></image:image>
+		<image:image><image:loc>https://tiny-landlord.com/img/tycoon-icon-512.png</image:loc></image:image>
+		<image:image><image:loc>https://tiny-landlord.com/img/tycoon-shot-1.webp</image:loc></image:image>
+		<image:image><image:loc>https://tiny-landlord.com/img/tycoon-shot-2.webp</image:loc></image:image>
+		<image:image><image:loc>https://tiny-landlord.com/img/tycoon-shot-3.webp</image:loc></image:image>
+		<image:image><image:loc>https://tiny-landlord.com/img/tycoon-shot-4.webp</image:loc></image:image>
+		<image:image><image:loc>https://tiny-landlord.com/img/tycoon-shot-5.webp</image:loc></image:image>
+		<image:image><image:loc>https://tiny-landlord.com/img/tycoon-shot-6.webp</image:loc></image:image>
+		<image:image><image:loc>https://tiny-landlord.com/img/tycoon-shot-7.webp</image:loc></image:image>
+	</url>
+	<url>
+		<loc>https://tiny-landlord.com/tycoon/privacy/</loc>
+		<lastmod>2026-10-29</lastmod>
+	</url>
+	<url>
+		<loc>https://tiny-landlord.com/idle/</loc>
+		<lastmod>2026-10-29</lastmod>
+		<image:image><image:loc>https://tiny-landlord.com/img/social-idle.png</image:loc></image:image>
+		<image:image><image:loc>https://tiny-landlord.com/img/idle-icon-512.png</image:loc></image:image>
+	</url>
+	<url>
+		<loc>https://tiny-landlord.com/idle/privacy/</loc>
+		<lastmod>2026-10-29</lastmod>
+	</url>
+</urlset>

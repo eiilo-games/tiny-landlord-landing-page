@@ -1,0 +1,614 @@
+/* Tiny Landlord — one stylesheet for every page.
+   Mobile first (playbook §11): no horizontal scroll at 320 px, clamp()
+   font sizes, wrapping allowed everywhere, tap targets >= 44 px. */
+
+:root {
+	--paper: #f6f1e7;
+	--ink: #2b2420;
+	--ink-soft: #5c524a;
+	--card: #fffdf7;
+	--line: #e3d9c8;
+	--accent: #2f7d5a;
+	--accent-ink: #ffffff;
+	--no: #b4543e;
+	--night: #221c2e;
+	--night-ink: #f3eee2;
+	--live: #5cc192;           /* the accent, bright enough for the night bar */
+}
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+	margin: 0;
+	background: var(--paper);
+	color: var(--ink);
+	font: 400 clamp(1rem, 0.95rem + 0.4vw, 1.125rem)/1.6 Georgia, "Times New Roman", serif;
+	overflow-wrap: anywhere;
+}
+
+.skip {
+	position: absolute;
+	left: -200vw;
+	top: 0;
+	background: var(--ink);
+	color: var(--paper);
+	padding: 0.75rem 1rem;
+}
+.skip:focus { left: 0; z-index: 10; }
+
+a { color: var(--accent); }
+
+/* Anchors land below the sticky header (nav.js measures it; 6.5rem without JS). */
+html { scroll-padding-top: calc(var(--header-h, 6.5rem) + 0.5rem); }
+@media (prefers-reduced-motion: no-preference) {
+	html { scroll-behavior: smooth; }
+}
+
+/* The games bar: the three games on every page, the current one marked */
+.games {
+	background: var(--night);
+	color: var(--night-ink);
+	padding: 0 clamp(0.5rem, 3vw, 2.5rem);
+	font-family: "Courier New", Courier, monospace;
+}
+.games ul {
+	list-style: none;
+	margin: 0 auto;
+	padding: 0;
+	max-width: 72rem;
+	display: flex;
+	gap: 0.25rem;
+}
+.games li { flex: 1 1 0; min-width: 0; }
+@media (min-width: 40rem) {
+	.games li { flex: 0 1 auto; }
+}
+.games a {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.5rem;
+	min-height: 44px;
+	padding: 0.4rem 0.75rem;
+	color: #d8d2e6;
+	text-decoration: none;
+	font-size: 0.9rem;
+	font-weight: 700;
+	letter-spacing: 0.04em;
+	border-bottom: 3px solid transparent;
+	line-height: 1.15;
+	text-align: center;
+}
+.games a:hover { color: #fff; background: rgba(255, 255, 255, 0.06); }
+.games a[aria-current] { color: #fff; border-bottom-color: var(--live); }
+.games img { flex: none; width: 1.6rem; height: 1.6rem; border-radius: 22%; }
+/* Phones: icon over the name. */
+@media (max-width: 30rem) {
+	.games a { flex-direction: column; gap: 0.2rem; font-size: 0.78rem; padding: 0.45rem 0.25rem; }
+}
+
+/* The page header: sticks to the top, with the page's sections */
+.top {
+	position: sticky;
+	top: 0;
+	z-index: 5;
+	background: var(--paper);
+	border-bottom: 1px solid var(--line);
+	box-shadow: 0 2px 10px rgba(43, 36, 32, 0.06);
+}
+.top .inner {
+	max-width: 72rem;
+	margin: 0 auto;
+	padding: 0.25rem clamp(1rem, 4vw, 2.5rem);
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto;
+	grid-template-areas: "brand get" "nav nav";
+	align-items: center;
+	column-gap: 1rem;
+}
+/* One row once brand, every section link and the Play button fit. */
+@media (min-width: 76rem) {
+	.top .inner { grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: "brand nav get"; }
+}
+.top .brand { grid-area: brand; }
+.top .sections { grid-area: nav; }
+.top .get { grid-area: get; }
+.brand {
+	font-family: "Courier New", Courier, monospace;
+	font-weight: 700;
+	font-size: clamp(1.05rem, 3.8vw, 1.3rem);
+	letter-spacing: 0.04em;
+	color: var(--ink);
+	text-decoration: none;
+	display: inline-block;
+	padding: 0.6rem 0;         /* >= 44px tap target */
+}
+.brand .door { color: var(--accent); }
+.sections {
+	display: flex;
+	gap: 0.15rem 0.9rem;
+	min-width: 0;
+	/* Phones: one row that scrolls sideways, faded at the right edge. */
+	overflow-x: auto;
+	scrollbar-width: none;
+	white-space: nowrap;
+	-webkit-mask-image: linear-gradient(to right, #000 calc(100% - 1.5rem), transparent);
+	mask-image: linear-gradient(to right, #000 calc(100% - 1.5rem), transparent);
+	padding-right: 1.5rem;
+	margin-right: calc(-1 * clamp(1rem, 4vw, 2.5rem));   /* scroll to the screen's edge */
+}
+.sections::-webkit-scrollbar { display: none; }
+@media (min-width: 76rem) {
+	.sections { justify-content: flex-end; -webkit-mask-image: none; mask-image: none; padding-right: 0; margin-right: 0; }
+}
+.sections a {
+	flex: none;
+	font-size: 0.95rem;
+	color: var(--ink-soft);
+	text-decoration: none;
+	padding: 0.6rem 0.2rem;    /* ~44px tap target */
+	border-bottom: 2px solid transparent;
+}
+.sections a:hover { color: var(--ink); }
+.sections a[aria-current] { color: var(--ink); border-bottom-color: var(--accent); }
+
+/* The header's small Google Play button (released games) */
+.get {
+	display: inline-flex;
+	align-items: center;
+	min-height: 44px;
+	padding: 0.45rem 0.9rem;
+	border-radius: 10px;
+	background: var(--accent);
+	color: var(--accent-ink);
+	font-family: "Courier New", Courier, monospace;
+	font-weight: 700;
+	font-size: 0.9rem;
+	letter-spacing: 0.04em;
+	text-decoration: none;
+	white-space: nowrap;
+}
+.get:hover { filter: brightness(1.08); }
+.get .long { display: none; }
+@media (min-width: 30rem) {
+	.get .long { display: inline; }
+	.get .short { display: none; }
+}
+
+/* Hero */
+.hero {
+	background: var(--night);
+	color: var(--night-ink);
+	padding: clamp(2.5rem, 8vw, 5rem) clamp(1rem, 4vw, 2.5rem) clamp(3rem, 9vw, 5.5rem);
+	text-align: center;
+}
+.hero .inner { max-width: 44rem; margin: 0 auto; }
+.kicker {
+	font-family: "Courier New", Courier, monospace;
+	text-transform: uppercase;
+	letter-spacing: 0.22em;
+	font-size: clamp(0.72rem, 2.6vw, 0.85rem);
+	color: #b8aed6;
+	margin: 0 0 1rem;
+}
+h1 {
+	font-family: "Courier New", Courier, monospace;
+	font-weight: 700;
+	font-size: clamp(2rem, 9vw, 3.75rem);
+	line-height: 1.05;
+	letter-spacing: 0.02em;
+	margin: 0 0 1rem;
+}
+.lede {
+	font-size: clamp(1.05rem, 3.4vw, 1.3rem);
+	color: #d8d2e6;
+	margin: 0 auto 2rem;
+	max-width: 36rem;
+}
+
+/* The sample card */
+.card {
+	background: var(--card);
+	color: var(--ink);
+	border: 1px solid var(--line);
+	border-radius: 14px;
+	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+	max-width: min(21rem, 100%);
+	margin: 0 auto 2rem;
+	padding: 1.4rem 1.3rem 1.2rem;
+	text-align: left;
+	transform: rotate(-1.5deg);
+}
+.card .from {
+	font-family: "Courier New", Courier, monospace;
+	font-size: 0.8rem;
+	text-transform: uppercase;
+	letter-spacing: 0.14em;
+	color: var(--ink-soft);
+	margin: 0 0 0.5rem;
+}
+.card .ask { font-size: clamp(1.05rem, 3.6vw, 1.2rem); margin: 0 0 1rem; }
+.card .swipes {
+	display: flex;
+	justify-content: space-between;
+	gap: 0.75rem;
+	font-family: "Courier New", Courier, monospace;
+	font-size: 0.85rem;
+	letter-spacing: 0.06em;
+}
+/* A brass flat number pinned to a card's corner, like the one on the door */
+.card { position: relative; }
+.card .flat {
+	position: absolute;
+	top: -0.9rem;
+	right: 1.1rem;
+	font-family: "Courier New", Courier, monospace;
+	font-weight: 700;
+	font-size: 1.05rem;
+	letter-spacing: 0.08em;
+	line-height: 1;
+	color: #3b2a12;
+	background: linear-gradient(160deg, #f1d58a, #c99a3e);
+	border: 1px solid #8a6424;
+	border-radius: 6px;
+	padding: 0.4rem 0.6rem;
+	box-shadow: 0 3px 8px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+	transform: rotate(3deg);
+}
+.card .swipes .no { color: var(--no); }
+.card .swipes .yes { color: var(--accent); }
+
+.hero .fine { color: #a79dc4; font-size: 0.9rem; margin: 1rem 0 0; }
+
+/* Buttons */
+.btn {
+	display: inline-block;
+	background: var(--accent);
+	color: var(--accent-ink);
+	font-family: "Courier New", Courier, monospace;
+	font-weight: 700;
+	letter-spacing: 0.05em;
+	text-decoration: none;
+	border: 0;
+	border-radius: 10px;
+	padding: 0.9rem 1.5rem;
+	min-height: 44px;
+	font-size: clamp(0.95rem, 3.8vw, 1.05rem);
+}
+.btn:hover { filter: brightness(1.08); }
+.btn.ghost {
+	background: transparent;
+	color: var(--night-ink);
+	border: 1px solid #564a78;
+}
+
+/* Sections */
+.section { padding: clamp(2.25rem, 7vw, 4rem) clamp(1rem, 4vw, 2.5rem); }
+.section .inner { max-width: 44rem; margin: 0 auto; }
+.section.alt { background: #efe7d7; }
+h2 {
+	font-family: "Courier New", Courier, monospace;
+	font-size: clamp(1.4rem, 5vw, 1.9rem);
+	letter-spacing: 0.02em;
+	margin: 0 0 1rem;
+}
+
+.stats {
+	list-style: none;
+	margin: 1.5rem 0 0;
+	padding: 0;
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(min(16rem, 100%), 1fr));
+	gap: 0.9rem;
+}
+.stats li {
+	background: var(--card);
+	border: 1px solid var(--line);
+	border-radius: 10px;
+	padding: 0.9rem 1rem;
+	min-width: 0;
+}
+.stats b {
+	display: block;
+	font-family: "Courier New", Courier, monospace;
+	text-transform: uppercase;
+	letter-spacing: 0.1em;
+	font-size: 0.85rem;
+	margin-bottom: 0.25rem;
+}
+
+/* Footer: the same map of the site on every page */
+footer { background: var(--night); color: #b8aed6; font-size: 0.95rem; }
+footer .inner {
+	max-width: 64rem;
+	margin: 0 auto;
+	padding: 2.25rem clamp(1rem, 4vw, 2.5rem) 2.5rem;
+}
+.foot {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(min(13rem, 100%), 1fr));
+	gap: 1.5rem 2rem;
+}
+.foot-h {
+	font-family: "Courier New", Courier, monospace;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.14em;
+	font-size: 0.78rem;
+	color: var(--night-ink);
+	margin: 0 0 0.35rem;
+}
+.foot ul { list-style: none; margin: 0; padding: 0; }
+footer a {
+	color: #d8d2e6;
+	display: inline-flex;
+	align-items: center;
+	min-height: 44px;     /* tap target */
+	text-decoration: none;
+}
+footer a:hover, footer a[aria-current] { color: #fff; text-decoration: underline; }
+.foot-get { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+footer .get { color: var(--accent-ink); padding: 0.45rem 0.9rem; }
+footer .get:hover { text-decoration: none; }
+.legal {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.25rem 1.5rem;
+	align-items: baseline;
+	margin: 1.75rem 0 0;
+	padding-top: 1rem;
+	border-top: 1px solid #3b3150;
+	font-size: 0.85rem;
+	color: #a79dc4;
+}
+.legal .tm { flex-basis: 100%; }
+
+/* Document pages (privacy, 404) */
+.doc { max-width: 44rem; margin: 0 auto; padding: clamp(1.5rem, 5vw, 3rem) clamp(1rem, 4vw, 2.5rem) 3rem; }
+.doc h1 { color: var(--ink); font-size: clamp(1.7rem, 7vw, 2.5rem); }
+.doc .lede { color: var(--ink); max-width: none; margin: 0 0 1.5rem; }   /* the hero's light lede is unreadable on paper */
+.doc .date {
+	font-family: "Courier New", Courier, monospace;
+	font-size: 0.85rem;
+	text-transform: uppercase;
+	letter-spacing: 0.12em;
+	color: var(--ink-soft);
+}
+.doc .todo { background: #fdeec9; border: 1px solid #e8cf8d; border-radius: 8px; padding: 0.6rem 0.9rem; }
+/* Policy versions (tools/policy.mjs): the notice on an old version, and
+   the "Changes and past versions" table. */
+.archived {
+	background: #fdeec9;
+	border: 1px solid #e8cf8d;
+	border-radius: 10px;
+	padding: 0.9rem 1.1rem;
+	margin: 1rem 0 1.5rem;
+}
+.archived strong { display: block; }
+.tablewrap { overflow-x: auto; margin: 0 0 1rem; }
+.doc table { border-collapse: collapse; width: 100%; font-size: 0.95rem; }
+/* Words wrap normally in the table: the body's overflow-wrap: anywhere
+   squeezed a column to a letter per line at 320 px (playbook §11). */
+.doc th, .doc td { text-align: left; vertical-align: top; padding: 0.6rem 0.75rem; border-bottom: 1px solid var(--line); overflow-wrap: normal; }
+.doc th { color: var(--ink-soft); font-family: "Courier New", Courier, monospace; font-size: 0.85rem; letter-spacing: 0.06em; text-transform: uppercase; }
+.doc td:first-child { width: 40%; }
+.doc tr[data-current] td { background: var(--card); }
+
+.summary, .toc {
+	background: var(--card);
+	border: 1px solid var(--line);
+	border-radius: 12px;
+	padding: 1.1rem 1.3rem;
+	margin: 1.5rem 0;
+}
+.summary h2, .toc h2 { font-size: 1.1rem; margin-top: 0; }
+.toc ol { margin: 0; padding-left: 1.2rem; }
+code {
+	font-family: "Courier New", Courier, monospace;
+	background: #ece4d2;
+	padding: 0.1em 0.3em;
+	border-radius: 4px;
+	font-size: 0.92em;
+}
+.center { text-align: center; }
+
+/* The game's icon above the hero kicker */
+.hero .icon {
+	display: block;
+	width: clamp(4.5rem, 18vw, 6rem);
+	height: auto;
+	aspect-ratio: 1;
+	margin: 0 auto 1.25rem;
+	border-radius: 22%;
+	box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+}
+
+/* Who runs a racket (Idle's floors) */
+.stats .who { display: block; color: var(--ink-soft); font-size: 0.9rem; margin-top: 0.35rem; }
+
+/* The Tiny Landlord games (the family list on every page) */
+.family {
+	list-style: none;
+	margin: 1.5rem 0 0;
+	padding: 0;
+	display: grid;
+	gap: 0.9rem;
+}
+/* Each game is a card: its page link, then its own download button. */
+.family li {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.6rem 1rem;
+	background: var(--card);
+	border: 1px solid var(--line);
+	border-radius: 12px;
+	padding: 0.9rem 1rem;
+	min-width: 0;
+}
+.family li:hover { border-color: var(--accent); }
+.family li:has([aria-current="page"]) { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.family .fam {
+	display: flex;
+	align-items: center;
+	gap: 0.9rem;
+	flex: 1 1 15rem;
+	min-width: 0;
+	min-height: 44px;
+	color: var(--ink);
+	text-decoration: none;
+}
+.family .get { margin-left: auto; }
+.family img {
+	flex: none;
+	width: 3.5rem;
+	height: 3.5rem;
+	border-radius: 22%;
+}
+.family span { min-width: 0; }
+.family b {
+	display: block;
+	font-family: "Courier New", Courier, monospace;
+	letter-spacing: 0.04em;
+	margin-bottom: 0.15rem;
+}
+.family small { display: block; color: var(--ink-soft); font-size: 0.9rem; line-height: 1.45; }
+.family .here {
+	display: block;
+	font-family: "Courier New", Courier, monospace;
+	text-transform: uppercase;
+	letter-spacing: 0.12em;
+	font-size: 0.72rem;
+	color: var(--accent);
+	margin-top: 0.3rem;
+}
+
+/* The official Google Play badge (img/google-play.png, from mooddude.app) */
+.play-badge { display: inline-block; line-height: 0; border-radius: 8px; }
+.play-badge img { height: 54px; width: auto; }
+.hero .play-badge img { height: 62px; }
+
+/* Released game's hero: the pitch beside a real screenshot */
+.hero.split .inner {
+	max-width: 64rem;
+	display: grid;
+	gap: 2.5rem 3rem;
+	align-items: center;
+}
+@media (min-width: 48rem) {
+	.hero.split { text-align: left; }
+	.hero.split .inner { grid-template-columns: minmax(0, 1fr) auto; }
+	.hero.split .icon { margin-left: 0; }
+	.hero.split .lede { margin-left: 0; }
+}
+.hero .cta { margin: 0; }
+.hero-shot {
+	justify-self: center;
+	width: min(15rem, 66vw);
+	margin: 0;
+	transform: rotate(1.5deg);
+}
+.hero-shot img {
+	display: block;
+	width: 100%;
+	height: auto;
+	border-radius: 18px;
+	border: 4px solid var(--card);
+	box-shadow: 0 14px 36px rgba(0, 0, 0, 0.45);
+}
+
+/* Screenshots: one row that scrolls sideways, each opens the viewer */
+.section .inner.wide { max-width: 64rem; }
+.shots {
+	display: grid;
+	grid-auto-flow: column;
+	grid-auto-columns: clamp(9.5rem, 30vw, 12.5rem);
+	gap: 0.9rem;
+	margin: 1.5rem calc(-1 * clamp(1rem, 4vw, 2.5rem)) 0;
+	padding: 0.25rem clamp(1rem, 4vw, 2.5rem) 1rem;
+	overflow-x: auto;
+	scroll-snap-type: x mandatory;
+	scroll-padding: 0 clamp(1rem, 4vw, 2.5rem);
+	scrollbar-width: thin;
+	scrollbar-color: var(--line) transparent;
+}
+.shots a {
+	display: block;
+	scroll-snap-align: start;
+	color: var(--ink-soft);
+	text-decoration: none;
+	cursor: zoom-in;
+	-webkit-tap-highlight-color: transparent;
+}
+.shots img {
+	display: block;
+	width: 100%;
+	height: auto;
+	border-radius: 12px;
+	border: 1px solid var(--line);
+	background: var(--card);
+	transition: transform 150ms, box-shadow 150ms;
+}
+.shots a:hover img { transform: translateY(-3px); box-shadow: 0 8px 18px rgba(43, 36, 32, 0.18); }
+.shots span { display: block; font-size: 0.85rem; line-height: 1.4; margin-top: 0.5rem; }
+.hint { color: var(--ink-soft); font-size: 0.9rem; margin: 0.25rem 0 0; }
+
+/* Screenshot viewer (lightbox.js, from mooddude.app) */
+.lb-open { overflow: hidden; }
+.lightbox {
+	width: 100%; height: 100%; max-width: none; max-height: none;
+	margin: 0; padding: 0; border: 0; background: transparent; color: #fff;
+	overflow: hidden;
+}
+.lightbox::backdrop { background: rgba(26, 21, 36, 0.97); }
+.lightbox[open] { animation: lb-in 160ms ease-out; }
+@keyframes lb-in { from { opacity: 0; } }
+.lb-track {
+	display: flex; width: 100%; height: 100%;
+	overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory;
+	overscroll-behavior: contain; scrollbar-width: none;
+}
+.lb-track::-webkit-scrollbar { display: none; }
+.lb-track:focus { outline: none; }
+.lb-slide {
+	flex: 0 0 100%; height: 100%; margin: 0; scroll-snap-align: center; scroll-snap-stop: always;
+	display: flex; align-items: center; justify-content: center;
+	padding: 64px 76px 72px; box-sizing: border-box;
+}
+.lb-slide img {
+	display: block; max-width: 100%; max-height: 100%; width: auto; height: auto;
+	border-radius: 14px; border: 3px solid var(--card); background: var(--card);
+	box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+}
+.lb-btn {
+	position: absolute; display: grid; place-items: center;
+	width: 48px; height: 48px; padding: 0; border-radius: 50%;
+	color: var(--ink); background: var(--card); border: 2px solid var(--ink);
+	box-shadow: 0 4px 0 var(--ink); cursor: pointer;
+	transition: transform 80ms, box-shadow 80ms, opacity 150ms;
+}
+.lb-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--ink); }
+.lb-btn:disabled { opacity: 0.3; cursor: default; transform: none; box-shadow: 0 4px 0 var(--ink); }
+.lb-btn:focus-visible { outline-color: #fff; border-radius: 50%; }
+.lb-close { top: 12px; right: 12px; }
+.lb-prev, .lb-next { top: 50%; margin-top: -24px; }
+.lb-prev { left: 14px; }
+.lb-next { right: 14px; }
+.lightbox.single .lb-prev, .lightbox.single .lb-next { display: none; }
+.lb-bar {
+	position: absolute; left: 0; right: 0; bottom: 0; margin: 0;
+	padding: 14px 72px 20px; text-align: center; font-size: 0.95rem; line-height: 1.35;
+	pointer-events: none;
+}
+.lb-count { font: 700 0.9rem/1 "Courier New", Courier, monospace; letter-spacing: 0.04em; margin-right: 8px; color: #fff; }
+.lb-caption { color: #d8d2e6; }
+
+@media (max-width: 760px) {
+	/* Phones swipe; the arrows move to the bottom corners, out of the picture. */
+	.lb-slide { padding: 64px 10px 96px; }
+	.lb-prev, .lb-next { top: auto; bottom: 16px; margin-top: 0; }
+	.lb-bar { padding: 0 72px 22px; min-height: 48px; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; }
+	.lb-caption { font-size: 0.85rem; }
+}
