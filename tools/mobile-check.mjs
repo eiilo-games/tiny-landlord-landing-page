@@ -15,7 +15,7 @@ import { mkdirSync } from "node:fs";
 const { chromium } = await import(process.env.PLAYWRIGHT ?? "playwright-core");
 const base = process.argv[2] ?? "http://localhost:8000";
 const out = process.argv[3] ?? "/tmp/tl-mobile";
-const pages = ["/", "/tycoon/", "/idle/", "/privacy/", "/tycoon/privacy/", "/idle/privacy/", "/404.html"];
+const pages = ["/", "/tycoon/", "/idle/", "/privacy/", "/tycoon/privacy/", "/idle/privacy/", "/terms/", "/tycoon/terms/", "/idle/terms/", "/404.html"];
 const widths = [320, 390, 412];
 mkdirSync(out, { recursive: true });
 

@@ -7,7 +7,8 @@ About section, a "Get it on Google Play" button in each header and a
 "Get it" button on each family-list card, and download buttons for all
 three in the footer. The Tycoon page also has screenshots with a
 full-screen viewer. One privacy policy per app for Google Play and AdMob
-(each covers its in-app purchases). No playable port. Each Play link
+(each covers its in-app purchases), and one terms and conditions page per
+app. No playable port. Each Play link
 404s until that app reaches production, which is expected (playbook §11).
 
 Plain static files, no build step, no third-party requests.
@@ -20,30 +21,33 @@ GitHub Pages repo, one Search Console property, and every page shares the
 domain's trust and links. A new game in the series gets a new folder here,
 not a new domain or a `<game>.tiny-landlord.com` subdomain.
 
-| Path | Game (repo) | Package | Privacy policy |
-|---|---|---|---|
-| `/` | Tiny Landlord, the classic (`../tiny-landlord`) | `com.eiilo.games.tinylandlord` | `/privacy/` |
-| `/tycoon/` | Tiny Landlord: Tycoon (`../tiny-landlord-tycoon`) | `com.eiilo.games.tinylandlord.tycoon` | `/tycoon/privacy/` |
-| `/idle/` | Tiny Landlord: Idle (`../tiny-landlord-idle`) | `com.eiilo.games.tinylandlord.idle` | `/idle/privacy/` |
+| Path | Game (repo) | Package | Privacy policy | Terms |
+|---|---|---|---|---|
+| `/` | Tiny Landlord, the classic (`../tiny-landlord`) | `com.eiilo.games.tinylandlord` | `/privacy/` | `/terms/` |
+| `/tycoon/` | Tiny Landlord: Tycoon (`../tiny-landlord-tycoon`) | `com.eiilo.games.tinylandlord.tycoon` | `/tycoon/privacy/` | `/tycoon/terms/` |
+| `/idle/` | Tiny Landlord: Idle (`../tiny-landlord-idle`) | `com.eiilo.games.tinylandlord.idle` | `/idle/privacy/` | `/idle/terms/` |
 
 - The root is both the classic game's page and the family hub: its
   "The Tiny Landlord games" section (`/#games`) lists all three, and its
   hero has a "New: Tycoon is out" link.
 - Every game page ends with the same family list, and every policy links
   the other two.
+- The classic game's terms folder is `terms/` at the root (next to
+  `privacy/`), so its archived versions are `terms/<YYYY-MM-DD>.html`.
 
 ## Navigation (the same three blocks on every page)
 
 1. **Games bar** (`<nav class="games" id="top">`, dark): the three games
    with their icons. The current game is `aria-current="page"` on its own
-   page and `aria-current="true"` on its policy.
+   page and `aria-current="true"` on its policy and its terms.
 2. **Page header** (`<header class="top">`, sticky): the game's brand, the
    page's section links (`<nav class="sections">`, in-page `#anchors` plus
-   Privacy) and the game's small `.get` Google Play button (on its page
-   and its policy). On phones the section links are one row that scrolls sideways.
+   Privacy and Terms) and the game's small `.get` Google Play button (on its
+   page, its policy and its terms). On phones the section links are one row that scrolls sideways.
    `nav.js` keeps anchors below the sticky header (`--header-h`) and marks
    the section being read (`aria-current="location"`).
-3. **Footer** (dark): the games, the three privacy policies, a download
+3. **Footer** (dark): the games, the three privacy policies, the three
+   terms pages, a download
    button per game, contact, "Back to the top" (`#top`) and Google's trademark line (required
    next to the badge).
 
@@ -65,14 +69,18 @@ tycoon/index.html           Tiny Landlord: Tycoon (released): hero, screenshots,
 tycoon/privacy/index.html   Tycoon policy, served at /tycoon/privacy/
 idle/index.html             Tiny Landlord: Idle coming-soon page
 idle/privacy/index.html     Idle policy, served at /idle/privacy/
+terms/index.html            classic terms and conditions, served at /terms/
+tycoon/terms/index.html     Tycoon terms, served at /tycoon/terms/
+idle/terms/index.html       Idle terms, served at /idle/terms/
 404.html                    not-found page (noindex), lists the three games
 style.css                   one stylesheet for every page
 nav.js                      sticky-header anchor offset and the section highlight (every page)
 lightbox.js                 screenshot viewer, copied from mooddude.app: each .shots link opens a swipeable full-screen carousel
 img/                        per-game icons, the Tycoon's screenshots and share card, google-play.png (see "Art" below)
 tools/build-art.sh          rebuilds the game images from the game repos (--capture re-renders the Tycoon's first)
-tools/mobile-check.mjs      the playbook §11 phone check on all seven pages
+tools/mobile-check.mjs      the playbook §11 phone check on all ten pages
 tools/policy.mjs            privacy policy versions: list, date (first publication), new, check
+tools/terms.mjs             terms and conditions versions: list, new, check
 app-ads.txt                 AdMob authorised-seller line for all three apps (same eiilo publisher as the other games)
 robots.txt, sitemap.xml, CNAME, .nojekyll
 ```
@@ -120,6 +128,8 @@ throwaway save and trophy store, so the player's files are never touched.
 
 - [ ] Buy the domain (above) and set up `hello@` forwarding to an inbox
       you read.
+- [ ] Fill in the trader details in the three terms pages (see "Terms
+      and conditions" below); `node tools/terms.mjs check` fails until then.
 - [ ] Date each privacy policy before its URL goes into Play Console /
       AdMob: `node tools/policy.mjs date <classic|tycoon|idle> <YYYY-MM-DD>`
       (see "Privacy policies" below). Before that, fix or accept the open
@@ -140,9 +150,10 @@ throwaway save and trophy store, so the player's files are never touched.
 - [ ] Mobile check at 320, 390 and 412 px wide before every deploy:
       `tools/mobile-check.mjs` (usage in its header) fails on sideways
       scroll, a broken image or a tap target under 44 px. Last passed
-      2026-10-29 on all seven pages. Look at its screenshots too.
+      2026-10-29 on all seven pages of then (the three terms pages were
+      added on 2026-11-14). Look at its screenshots too.
 - [ ] Validate: `xmllint --noout sitemap.xml`, parse the JSON-LD on every
-      page, `node tools/policy.mjs check`. Bump `lastmod` in the sitemap
+      page, `node tools/policy.mjs check`, `node tools/terms.mjs check`. Bump `lastmod` in the sitemap
       whenever a page changes.
 
 ## Privacy policies
@@ -205,6 +216,48 @@ audit; the policies describe the code as it is):
 - **No in-app link to the policy.** Play's User Data policy expects one;
   the Settings or Credits screen could link it.
 
+## Terms and conditions
+
+One terms page per game, the URL to give Google Play and any trader (EU
+DSA) declaration: `https://tiny-landlord.com/terms/` (Tiny Landlord),
+`https://tiny-landlord.com/tycoon/terms/` and
+`https://tiny-landlord.com/idle/terms/`. Each was written on 2026-11-14
+from the shared eiilo games master text (French law), with the game's ads,
+purchases, restore behaviour, Play Games features and save taken from its
+privacy policy (and its `store.gd`), and links that game's privacy policy.
+The terms use hi@eiilo.com, the trader e-mail, not hello@.
+
+**Versions** (`tools/terms.mjs`, the same scheme as the privacy policies).
+In each terms folder, `index.html` is the version in effect and
+`<YYYY-MM-DD>.html` is each earlier version, named by the date it took
+effect; old versions are never deleted.
+
+```sh
+node tools/terms.mjs list                                   # each game's terms, its date, its past versions
+node tools/terms.mjs new tycoon 2026-12-01 "What changed"   # every change: classic, tycoon or idle
+node tools/terms.mjs check                                  # before every deploy
+```
+
+- Never edit a live version in place. `new` archives the current page
+  (`noindex`, no canonical or `og:url`, an "old version" notice at the
+  `<!-- archived-notice -->` marker with its dates and a link to the
+  current terms), moves `index.html` to the new date, adds a row on top of
+  its "Changes and past versions" table and bumps the sitemap. Then edit
+  `index.html` with the new wording and run `check`.
+- Keep the markers the tool relies on: `<time class="effective"
+  datetime="…">` reading "Effective D Month YYYY", the
+  `<!-- archived-notice -->` comment right after it, `<tbody
+  data-versions>` and the one `<tr data-current>` row.
+
+**Before going live:** replace the four placeholders in each of the three
+pages, `[[TRADER_NAME]]`, `[[TRADER_ADDRESS]]`, `[[TRADER_REGISTRATION]]`
+and `[[CONSUMER_MEDIATOR]]`, with the details declared to Google Play as
+the trader; `check` fails while any is left. The pages are dated
+14 November 2026; as long as no archived version exists yet, that date
+may be moved by hand to the real first-publication date (the
+`<time class="effective">` datetime and text, the `(this version)` row
+and the sitemap `lastmod`).
+
 ## Run locally
 
 ```sh
@@ -251,7 +304,8 @@ redirects `www.tiny-landlord.com` to the apex.
 
 - **Search Console**: add a Domain property for `tiny-landlord.com` (DNS TXT
   record at OVH; it covers every path), submit `sitemap.xml` the same day,
-  then URL-inspect `/`, `/tycoon/`, `/idle/` and the three privacy pages and
+  then URL-inspect `/`, `/tycoon/`, `/idle/`, the three privacy pages and
+  the three terms pages and
   click **Request indexing**. Pre-launch 404 entries: click **Validate
   fix** once live (playbook §11).
 - Same in Bing Webmaster Tools (import from Search Console).
@@ -262,6 +316,8 @@ redirects `www.tiny-landlord.com` to the apex.
   `https://tiny-landlord.com/app-ads.txt`, at the root, for all three) and
   the privacy policy to that app's own URL: `/privacy/`, `/tycoon/privacy/`
   or `/idle/privacy/`. Use the same URL in AdMob and keep each app's Data
-  safety form in line with its policy.
+  safety form in line with its policy. Wherever Play Console or the trader
+  declaration asks for terms, give that app's terms URL: `/terms/`,
+  `/tycoon/terms/` or `/idle/terms/`.
 - After any `img/social*.png` ever changes, re-scrape that page in
   Facebook's Sharing Debugger; chat apps cache the old one.
